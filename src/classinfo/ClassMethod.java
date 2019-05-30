@@ -1,3 +1,4 @@
+package classinfo;
 import java.util.*;
 
 public class ClassMethod {

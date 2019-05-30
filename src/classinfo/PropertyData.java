@@ -1,3 +1,4 @@
+package classinfo;
 
 public class PropertyData {
 	private String name;

@@ -1,7 +1,8 @@
+package classinfo;
 import java.util.*;
 
 public class ClassVariable {
-	private String name;
+	private PropertyData property;
 	private ArrayList<ClassMethod> methods;
 	
 	public ClassVariable() {
