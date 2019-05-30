@@ -1,10 +1,10 @@
 import java.io.*;
 
 public class ReadFile {
-	public static StringBuffer Read(String fileName) {
+	public static StringBuffer read(String fileName) {
 		StringBuffer buffer = new StringBuffer();
 		try(FileInputStream file = new FileInputStream(fileName)) {
-			int b = file.read();
+			int b;
 			while((b = file.read()) != -1) {
 				buffer.append((char)b);
 			}
