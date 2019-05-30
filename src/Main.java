@@ -3,8 +3,8 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Parsing p = new Parsing();
-		p.Parse();
+		StringBuffer buffer = ReadFile.Read();
+		System.out.println(buffer);
 	}
 
 }
