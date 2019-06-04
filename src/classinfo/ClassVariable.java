@@ -1,8 +1,7 @@
 package classinfo;
 import java.util.*;
 
-public class ClassVariable {
-	private PropertyData property;
+public class ClassVariable extends PropertyData {
 	private ArrayList<ClassMethod> methods;
 
 	public ClassVariable() {
@@ -10,12 +9,7 @@ public class ClassVariable {
 	}
 	
 	public ClassVariable(PropertyData property, ArrayList<ClassMethod> methods) {
-		this.property = property;
 		this.methods = methods;
-	}
-	
-	public PropertyData getProperty() {
-		return property;
 	}
 	
 	public ArrayList<ClassMethod> getMethods() {

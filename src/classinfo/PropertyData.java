@@ -5,6 +5,10 @@ public class PropertyData {
 	private String type;
 	private String access;
 	
+	public PropertyData() {
+		
+	}
+	
 	public PropertyData(String name, String type, String access) {
 		this.name = name;
 		this.type = type;
