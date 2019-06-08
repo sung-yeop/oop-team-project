@@ -1,21 +1,22 @@
 package classinfo;
 import java.util.*;
 
-public class ClassVariable {
-	private PropertyData property;
+public class ClassVariable extends PropertyData {
 	private ArrayList<ClassMethod> methods;
 
 	public ClassVariable() {
 		methods = new ArrayList<ClassMethod>();
 	}
 	
-	public ClassVariable(PropertyData property, ArrayList<ClassMethod> methods) {
-		this.property = property;
-		this.methods = methods;
+	public ClassVariable(PropertyData data) {
+		this();
+		this.setAccess(data.getAccess());
+		this.setName(data.getName());
+		this.setType(data.getType());
 	}
 	
-	public PropertyData getProperty() {
-		return property;
+	public ClassVariable(PropertyData property, ArrayList<ClassMethod> methods) {
+		this.methods = methods;
 	}
 	
 	public ArrayList<ClassMethod> getMethods() {

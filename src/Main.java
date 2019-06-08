@@ -6,7 +6,8 @@ public class Main {
 		// TODO Auto-generated method stub
 		StringBuffer buffer = ReadFile.read("examples/Stack.h");
 		if(buffer != null) {
-			ClassInformation classInfo = Parsing.parse(buffer);
+			Parsing p = new Parsing();
+			ClassInformation classInfo = p.parse(buffer);
 			// UI 뿌리기
 			classInfo.getName(); // 클래스의 이름
 			classInfo.getMethods(); // 클래스에서 사용중인 모든 메소드를 가져옴

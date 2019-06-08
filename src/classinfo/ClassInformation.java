@@ -36,13 +36,17 @@ public class ClassInformation {
 		return name;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public ArrayList<PropertyData> getAllProperty() {
 		ArrayList<PropertyData> allProps = new ArrayList<PropertyData>();
 		for(ClassVariable variable: variables) {
-			allProps.add(variable.getProperty());
+			allProps.add(variable);
 		}
 		for(ClassMethod method: methods) {
-			allProps.add(method.getProperty());
+			allProps.add(method);
 		}
 		return allProps;
 	}
