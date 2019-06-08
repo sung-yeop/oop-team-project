@@ -8,6 +8,13 @@ public class ClassVariable extends PropertyData {
 		methods = new ArrayList<ClassMethod>();
 	}
 	
+	public ClassVariable(PropertyData data) {
+		super();
+		this.setAccess(data.getAccess());
+		this.setName(data.getName());
+		this.setType(data.getType());
+	}
+	
 	public ClassVariable(PropertyData property, ArrayList<ClassMethod> methods) {
 		this.methods = methods;
 	}
