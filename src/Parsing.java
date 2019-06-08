@@ -26,11 +26,13 @@ public class Parsing {
 		IN_PARAMETER,
 	}
 	
-	private ClassInformation classInfo;
-	private String accessType;
-	private Stack<ParsingStatus> statuses;
-	private Stack<PropertyData> props;
-	private List<ClassVariable> params;
+	private ClassInformation classInfo;		// 결과 클래스
+	private String accessType;				// 전역적으로 저장된 현재 접근 제어
+	private Stack<ParsingStatus> statuses;	// 현재 상태를 스택으로 쌓아놓
+	private Stack<PropertyData> props;		// 클래스에 함수 또는 변수로 들어 내용들
+	private List<ClassVariable> params;		// 함수의 파라미터로 저장될 변수들
+	private Stack<Boolean> blockLevel;		// 클래스와 함수를 제외한 중괄호 단계
+	private String methodContent;			// 함수 내용
 	
 	private Map<Pattern, Consumer<String>> patterns;
 	
@@ -41,6 +43,8 @@ public class Parsing {
 		statuses.push(ParsingStatus.NORMAL);
 		props = new Stack<PropertyData>();
 		params = new ArrayList<ClassVariable>();
+		blockLevel = new Stack<Boolean>();
+		methodContent = "";
 		initializePatterns();
 	}
 	
@@ -64,7 +68,8 @@ public class Parsing {
 			String line = st.nextToken();
 			processByLine(line);
 		}
-		
+		changeMethodName();
+		matchVariableAndMethod();
 		return classInfo;
 	}
 	
@@ -82,15 +87,23 @@ public class Parsing {
 				patterns = addClassMethodNamePattern(name);
 				break;
 			case SET_PROPERTY_NAME:
-				props.lastElement().setName(word.split("[(| |)|;]")[0]);
+				if(statuses.search(ParsingStatus.IN_PARAMETER) == -1 && statuses.search(ParsingStatus.IN_CLASS_BLOCK) == -1){
+					props.lastElement().setName(word.split("[::|(]")[2]);
+				} else {
+					props.lastElement().setName(word.split("[(| |)|;]")[0]);
+					// 남은 라인에서	
+				}
 				statuses.pop();
-				// 남은 라인에서
 				if(line.indexOf('(') == -1 || statuses.search(ParsingStatus.IN_PARAMETER) != -1) {
 					statuses.push(ParsingStatus.DECLARE_VARIABLE);
 				} else {
 					statuses.push(ParsingStatus.DECLARE_METHOD);
 				}
 				break;
+			}
+			
+			if(statuses.search(ParsingStatus.IN_METHOD_BLOCK) != -1) {
+				methodContent += word + " ";
 			}
 			
 			patterns.keySet().stream()
@@ -101,6 +114,43 @@ public class Parsing {
 			if(statuses.lastElement() == ParsingStatus.SKIP_LINE) {
 				statuses.pop();
 				break;
+			}
+		}
+		
+		if(statuses.search(ParsingStatus.IN_METHOD_BLOCK) != -1) {
+			methodContent += "\n";
+		}
+	}
+	
+	private void changeMethodName() {
+		for(ClassMethod method: classInfo.getMethods()) {
+			String paramInfo = "(";
+			ArrayList<String> types = new ArrayList<String>();
+			for(ClassVariable param: method.getParameters()) {
+				types.add(param.getType());
+			}
+			paramInfo += String.join(",", types);
+			paramInfo += ")";
+			method.setName(method.getName() + paramInfo);
+		}
+	}
+	
+	private void matchVariableAndMethod() {
+		for(ClassMethod method: classInfo.getMethods()) {
+			if(method.getContent() != "") {
+				StringTokenizer st = new StringTokenizer(method.getContent(), "[ |\n|(|)|!|/[|/]|-|+|;]", false);
+				while(st.hasMoreTokens()) {
+					String word = st.nextToken();
+					for(ClassVariable variable: classInfo.getVariables()) {
+						if(word.contains(variable.getName())) {
+							if(!variable.getMethods().contains(method))
+								variable.getMethods().add(method);
+							if(!method.getVariables().contains(variable))
+								method.getVariables().add(variable);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -121,28 +171,52 @@ public class Parsing {
 	}
 	
 	private void startBlock(String word) {
-		if(statuses.search(ParsingStatus.DECLARE_METHOD) != -1) {
+		if(statuses.search(ParsingStatus.IN_METHOD_BLOCK) != -1) {
+			blockLevel.push(true);
+		} else if(statuses.search(ParsingStatus.DECLARE_METHOD) != -1) {
 			statuses.push(ParsingStatus.IN_METHOD_BLOCK);
-			System.out.println("IN METHOD");
 		} else {
 			statuses.push(ParsingStatus.IN_CLASS_BLOCK);
-			System.out.println("IN CLASS");
 		}
 	}
 	
 	private void endBlock(String word) {
-		if(statuses.search(ParsingStatus.DECLARE_METHOD) != -1) {
-			ClassMethod method = new ClassMethod(props.pop());
-			method.getParameters().addAll(params);
+		if(blockLevel.size() != 0) {
+			blockLevel.pop();
+		} else if(statuses.search(ParsingStatus.DECLARE_CLASS) == -1) {
+			statuses.remove(statuses.lastIndexOf(ParsingStatus.IN_METHOD_BLOCK));
+			statuses.remove(statuses.lastIndexOf(ParsingStatus.DECLARE_METHOD));
+			for(ClassMethod method : classInfo.getMethods()) {
+				if(method.getName().equals(props.lastElement().getName()) && method.getParameters().size() == params.size()) {
+					int index = 0;
+					for(ClassVariable variable : method.getParameters()) {
+						if(!variable.getType().equals(params.get(index).getType())) {
+							break;
+						}
+						index++;
+					}
+					if(index == params.size()) {
+						methodContent = replaceLast(methodContent, "}", "");
+						method.setContent(methodContent);
+					}
+				}
+			}
 			params.clear();
+			props.pop();
+			methodContent = "";
+		} else if(statuses.search(ParsingStatus.DECLARE_METHOD) != -1) {
+			ClassMethod method = new ClassMethod(props.pop());
+			method.getParameters().addAll(params);			
+			params.clear();
+			methodContent = replaceLast(methodContent, "}", "");
+			method.setContent(methodContent);
+			methodContent = "";
 			classInfo.getMethods().add(method);
 			statuses.remove(statuses.lastIndexOf(ParsingStatus.IN_METHOD_BLOCK));
 			statuses.remove(statuses.lastIndexOf(ParsingStatus.DECLARE_METHOD));
-			System.out.println("OUT METHOD");
 		} else {
 			statuses.remove(statuses.lastIndexOf(ParsingStatus.IN_CLASS_BLOCK));
 			statuses.remove(statuses.lastIndexOf(ParsingStatus.DECLARE_CLASS));
-			System.out.println("OUT CLASS");
 		}
 	}
 
@@ -160,14 +234,21 @@ public class Parsing {
 			));
 			props.push(tempProperty);
 			statuses.push(ParsingStatus.DECLARE_METHOD);
+		} else if(classInfo.getMethods().size() != 0 && statuses.search(ParsingStatus.DECLARE_METHOD) == -1) {
+			PropertyData tempProperty = new PropertyData();
+			tempProperty.setType("void");
+			String name = word.split("[::|(]")[2];
+			tempProperty.setName(name);
+			props.push(tempProperty);
+			statuses.push(ParsingStatus.DECLARE_METHOD);
 		}
 	}
 	
 	private void addProperty(String word) {
-		if(statuses.search(ParsingStatus.DECLARE_CLASS) != -1) {
+		if(statuses.search(ParsingStatus.IN_METHOD_BLOCK) == -1) {
 			PropertyData tempProperty; 
 			tempProperty = new PropertyData();
-			if(statuses.search(ParsingStatus.IN_PARAMETER) == -1) {
+			if(statuses.search(ParsingStatus.IN_PARAMETER) == -1 && statuses.search(ParsingStatus.IN_CLASS_BLOCK) != -1) {
 				tempProperty.setAccess(accessType);
 			}
 			tempProperty.setType(getPatternWord(
@@ -221,4 +302,13 @@ public class Parsing {
 		}
 		return "";
 	}
+	
+	public String replaceLast(String text, String regex, String replacement) {
+		int regexIndexOf = text.lastIndexOf(regex);
+        if(regexIndexOf == -1){
+            return text;
+        }else{
+            return text.substring(0, regexIndexOf) + replacement + text.substring(regexIndexOf + regex.length());
+        }
+    }
 }

@@ -9,7 +9,7 @@ public class ClassVariable extends PropertyData {
 	}
 	
 	public ClassVariable(PropertyData data) {
-		super();
+		this();
 		this.setAccess(data.getAccess());
 		this.setName(data.getName());
 		this.setType(data.getType());
