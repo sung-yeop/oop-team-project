@@ -7,12 +7,29 @@ public class main extends JSplitPane{
 	protected JTextArea display_code;
 	protected JTextArea display_use;
 	
-	
 	public main() {
 		super(HORIZONTAL_SPLIT);
 		
 		JTable c_table; //1)추가
 		JTable d_table; //1)추기
+		
+		JPanel Panel_Tree = new JPanel();
+		JPanel Panel_Use = new JPanel();
+		JPanel Panel_Many = new JPanel();
+		
+		Panel_Tree.setBounds(10, 10, 30, 100);
+		getRootPane().add(Panel_Tree);
+		Panel_Tree.add(tree);
+		Panel_Tree.setVisible(true);
+		
+		Panel_Use.setBounds(10, 130, 30, 100);
+		getRootPane().add(Panel_Use);
+		Panel_Use.add(display_use); 
+		
+		Panel_Many.setBounds(70, 10, 420, 220);
+		getRootPane().add(Panel_Many);
+		//Panel_Many.add(); <- CardLayout적용 필요, 어떤식으로 ?
+		//Panel_Many.add(display_code);와 table을 적용
 		
 		//table display
 		
@@ -54,18 +71,18 @@ public class main extends JSplitPane{
 				if(o instanceof d_method) {
 					display_code.append(((d_method)o).d_code_display());
 					display_use.append(((d_method)o).d_use_display());
+					Panel_Many.setVisible(true);
+					Panel_Use.setVisible(true);
 				}
 				else if(o instanceof d_class) {
-					getRootPane().add(new JScrollPane(c_table), "East"); //1)추가
+					Panel_Many.add(c_table);
+					Panel_Many.setVisible(true);
 					//getContentPane()
-					setSize(100,50); //1)추가
-					setVisible(true); //1)추가
+					//1)추가
 				}
 				else if(o instanceof d_data) {
-					getRootPane().add(new JScrollPane(d_table), "East"); //1)추가
-					//getContentPane()
-					setSize(100,50); //1)추가
-					setVisible(true); //1)추가
+					Panel_Many.add(d_table);
+					Panel_Many.setVisible(true);
 				}
 			}
 		});
