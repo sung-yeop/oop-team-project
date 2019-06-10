@@ -1,14 +1,15 @@
+import java.awt.BorderLayout;
+
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-public class main extends JSplitPane{
+public class main extends JFrame{
 	protected JTree tree;
 	protected JTextArea display_code;
 	protected JTextArea display_use;
 	
 	public main() {
-		super(HORIZONTAL_SPLIT);
 		
 		JTable c_table; //1)추가
 		JTable d_table; //1)추기
@@ -17,19 +18,18 @@ public class main extends JSplitPane{
 		JPanel Panel_Use = new JPanel();
 		JPanel Panel_Many = new JPanel();
 		
-		Panel_Tree.setBounds(10, 10, 30, 100);
-		getRootPane().add(Panel_Tree);
 		Panel_Tree.add(tree);
 		Panel_Tree.setVisible(true);
 		
+		Panel_Tree.setBounds(10, 10, 30, 100);
+		getContentPane().add(Panel_Tree);
+		
 		Panel_Use.setBounds(10, 130, 30, 100);
-		getRootPane().add(Panel_Use);
-		Panel_Use.add(display_use); 
+		getContentPane().add(Panel_Use);
 		
 		Panel_Many.setBounds(70, 10, 420, 220);
-		getRootPane().add(Panel_Many);
-		//Panel_Many.add(); <- CardLayout적용 필요, 어떤식으로 ?
-		//Panel_Many.add(display_code);와 table을 적용
+		getContentPane().add(Panel_Many);   //<- Code와 Table을 번갈아가며 표현할 부분이며 
+					           //    CardLayout은 추후에 적용 예정
 		
 		//table display
 		
@@ -71,14 +71,14 @@ public class main extends JSplitPane{
 				if(o instanceof d_method) {
 					display_code.append(((d_method)o).d_code_display());
 					display_use.append(((d_method)o).d_use_display());
+					Panel_Many.add(display_code);
 					Panel_Many.setVisible(true);
+					Panel_Use.add(display_use);
 					Panel_Use.setVisible(true);
 				}
 				else if(o instanceof d_class) {
 					Panel_Many.add(c_table);
 					Panel_Many.setVisible(true);
-					//getContentPane()
-					//1)추가
 				}
 				else if(o instanceof d_data) {
 					Panel_Many.add(d_table);
@@ -88,16 +88,16 @@ public class main extends JSplitPane{
 		});
 		display_code = new JTextArea(5, 20);
 		display_use = new JTextArea(5, 5);
-		add(new JScrollPane(tree));
-		add(new JScrollPane(display_code));
-		add(new JScrollPane(display_use));
+		//add(new JScrollPane(tree));
+		//add(new JScrollPane(display_code));
+		//add(new JScrollPane(display_use));
 	}
 	
 	
 	public static void main(String args[]) {
 		JFrame f = new JFrame("Tree Model");
-		main tree = new main();
-		f.getContentPane().add("Center", tree);
+		main main = new main();
+		f.getContentPane().add("Center", main);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setSize(500,400);
 		f.setVisible(true);
