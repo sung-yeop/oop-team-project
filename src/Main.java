@@ -27,17 +27,7 @@ public class Main extends JFrame {
 		setLayout(null);
 		
 		JTable c_table; //1)추가
-		JTable d_table; //1)추기
-		
-		//6_12 table 크기 변경
-		c_table.getColumnModel().getColumn(0).setPreferredWidth(85);
-		c_table.getColumnModel().getColumn(1).setPreferredWidth(85);
-		c_table.getColumnModel().getColumn(2).setPreferredWidth(85);
-		
-		d_table.getColumnModel().getColumn(0).setPreferredWidth(85);
-		d_table.getColumnModel().getColumn(1).setPreferredWidth(85);
-		d_table.getColumnModel().getColumn(2).setPreferredWidth(85);
-		//~~
+		JTable d_table; //1)추가
 		
 		JPanel Panel_Tree = new JPanel();
 		JPanel Panel_Use = new JPanel();
@@ -58,6 +48,16 @@ public class Main extends JFrame {
 		
 		c_table = new JTable(c_table_model); //1)추가
 		d_table = new JTable(); //1)추가
+		
+		//6_12 table 크기 변경
+		c_table.getColumnModel().getColumn(0).setPreferredWidth(85);
+		c_table.getColumnModel().getColumn(1).setPreferredWidth(85);
+		c_table.getColumnModel().getColumn(2).setPreferredWidth(85);
+		
+		d_table.getColumnModel().getColumn(0).setPreferredWidth(85);
+		d_table.getColumnModel().getColumn(1).setPreferredWidth(85);
+		//~~
+		
 		Panel_C_Table.add(c_table);
 		Panel_D_Table.add(d_table);
 		
