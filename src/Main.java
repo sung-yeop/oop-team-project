@@ -29,6 +29,16 @@ public class Main extends JFrame {
 		JTable c_table; //1)추가
 		JTable d_table; //1)추기
 		
+		//6_12 table 크기 변경
+		c_table.getColumnModel().getColumn(0).setPreferredWidth(85);
+		c_table.getColumnModel().getColumn(1).setPreferredWidth(85);
+		c_table.getColumnModel().getColumn(2).setPreferredWidth(85);
+		
+		d_table.getColumnModel().getColumn(0).setPreferredWidth(85);
+		d_table.getColumnModel().getColumn(1).setPreferredWidth(85);
+		d_table.getColumnModel().getColumn(2).setPreferredWidth(85);
+		//~~
+		
 		JPanel Panel_Tree = new JPanel();
 		JPanel Panel_Use = new JPanel();
 		JPanel Panel_Code = new JPanel();
