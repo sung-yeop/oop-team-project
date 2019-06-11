@@ -42,12 +42,16 @@ public class ClassInformation {
 	
 	public ArrayList<PropertyData> getAllProperty() {
 		ArrayList<PropertyData> allProps = new ArrayList<PropertyData>();
-		for(ClassVariable variable: variables) {
-			allProps.add(variable);
-		}
 		for(ClassMethod method: methods) {
 			allProps.add(method);
 		}
+		for(ClassVariable variable: variables) {
+			allProps.add(variable);
+		}
 		return allProps;
+	}
+	
+	public String toString() {
+		return this.name;
 	}
 }

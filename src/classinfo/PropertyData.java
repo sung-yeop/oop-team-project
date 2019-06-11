@@ -33,4 +33,8 @@ public class PropertyData {
 	public void setAccess(String access) {
 		this.access = access;
 	}
+
+	public String toString() {
+		return this.name;
+	}
 }

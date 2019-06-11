@@ -77,10 +77,11 @@ public class Parsing {
 		StringTokenizer st = new StringTokenizer(line, " ", false);
 		while(st.hasMoreTokens()) {
 			String word = st.nextToken();
+			String name = "";
 			// Property의 이름을 받음
 			switch(statuses.lastElement()) {
 			case SET_CLASS_NAME:
-				String name = word.split("[{| ]")[0];
+				name = word.split("[{| ]")[0];
 				classInfo.setName(name);
 				statuses.pop();
 				statuses.push(ParsingStatus.DECLARE_CLASS);
@@ -88,11 +89,12 @@ public class Parsing {
 				break;
 			case SET_PROPERTY_NAME:
 				if(statuses.search(ParsingStatus.IN_PARAMETER) == -1 && statuses.search(ParsingStatus.IN_CLASS_BLOCK) == -1){
-					props.lastElement().setName(word.split("[::|(]")[2]);
+					name = word.split("[::|(]")[2];
 				} else {
-					props.lastElement().setName(word.split("[(| |)|;]")[0]);
-					// 남은 라인에서	
+					name = word.split("[(| |)|;]")[0];
 				}
+				name = name.replace("*", "").replace("&", "");
+				props.lastElement().setName(name);
 				statuses.pop();
 				if(line.indexOf('(') == -1 || statuses.search(ParsingStatus.IN_PARAMETER) != -1) {
 					statuses.push(ParsingStatus.DECLARE_VARIABLE);
@@ -228,6 +230,7 @@ public class Parsing {
 		if(statuses.search(ParsingStatus.IN_CLASS_BLOCK) != -1) {
 			PropertyData tempProperty = new PropertyData();
 			tempProperty.setType("void");
+			tempProperty.setAccess(accessType);
 			tempProperty.setName(getPatternWord(
 					"(" + classInfo.getName() + "|~" + classInfo.getName() + ")",
 					word
