@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -33,7 +34,6 @@ public class main extends JFrame{
 		d_table = new JTable(d_table_model); //1)추가
 	
 		//##
-		//##
 		
 		//
 		//최상위 생성
@@ -50,17 +50,8 @@ public class main extends JFrame{
 		d_m4.add(new d_use_code("use4", "code4"));
 		//하위 노드 (data 생성)
 		/*
-		d_data d_d1 = d_c.get_data("size");
-		d_data d_d2 = d_c.get_data("stackPtr");
-		d_data d_d3 = d_c.get_data("ccc");
-		d_data d_d4 = d_c.get_data("ddd");
-		*/
-		//최상위 Table 데이터 추가
-		/*
-		d_c.add(new d_name_type_access("Stack()", "void", "public"));
-		d_c.add(new d_name_type_access("~Stack()", "void", "public"));
-		d_c.add(new d_name_type_access("push()", "bool", "public"));
-		d_c.add(new d_name_type_access("stackPtr", "T*", "private"));
+	
+		
 		*/
 		
 		ClassTreeModel tree_model = new ClassTreeModel(d_c);
@@ -69,6 +60,7 @@ public class main extends JFrame{
 		tree = new JTree(tree_model);
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent e) {
+				System.out.println("HELLO11");
 				Object o = e.getPath().getLastPathComponent();
 				if(o instanceof d_method) {
 					Panel_Code.add(display_code);
@@ -81,12 +73,17 @@ public class main extends JFrame{
 					Panel_Use.setVisible(true);
 				}
 				else if(o instanceof d_class) {
+					System.out.println("HELLO");
 					Panel_C_Table.add(c_table);
 					Panel_C_Table.setVisible(true);
+					Panel_D_Table.setVisible(false);
+					Panel_Code.setVisible(false);
 				}
 				else if(o instanceof d_data) {
 					Panel_D_Table.add(d_table);
 					Panel_D_Table.setVisible(true);
+					Panel_C_Table.setVisible(false);
+					Panel_Code.setVisible(false);
 				}
 			}
 		});
@@ -107,8 +104,10 @@ public class main extends JFrame{
 
 
 		Panel_C_Table.setBounds(215, 20, 300, 450);
+		getContentPane().add(Panel_C_Table);
 		
 		Panel_D_Table.setBounds(215, 20, 300, 450);
+		getContentPane().add(Panel_D_Table);
 		
 		Panel_Tree.add(tree);
 	}
